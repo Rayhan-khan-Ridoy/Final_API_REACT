@@ -13,6 +13,12 @@ use Laravel\Socialite\Facades\Socialite;
 
 use Illuminate\Http\Request;
 use App\Models\Adminregistration;
+use App\Models\Customer;
+use App\Models\Product;
+use App\Models\Officer;
+use App\Models\Cperformance;
+
+
 
 class adminController extends Controller
 {
@@ -38,6 +44,7 @@ public function adminLoginSubmit(Request $req){
 
                          if($ad) {
                             session()->flush();
+                            session()->put('id',$ad->id);
                             session()->put('username',$ad->username);
                             session()->flash('msg','login successful!');
                             return redirect()->route('adminDashboard');
@@ -53,20 +60,73 @@ public function adminLoginSubmit(Request $req){
                   }
 
   public function adminDashboard(){
-                                $all= Adminregistration::all();
-                                $allAdmins=count($all);
-
-                                $totalMales=Adminregistration::where('gender','Male')->count();
-                                $totalFemales=Adminregistration::where('gender','Female')->count();
-
-                                $admin=Adminregistration::where('username',session()->get('username'))->first();
 
 
 
-                                return view('adminDashboard')->with('admin',$admin)
-                                                             ->with('allAdmin',$allAdmins)
-                                                             ->with('totalMales',$totalMales)
-                                                             ->with('totalFemales',$totalFemales);
+                                $nonGooleAdmin = Adminregistration::where('id',session()->get('id'))->first();
+                                if($nonGooleAdmin){
+
+                                  $all= Adminregistration::all();
+                                  $allAdmins=count($all);
+                                  $branchInfo=$nonGooleAdmin->branche;
+
+                                  $totalMales=Adminregistration::where('gender','Male')->count();
+                                  $totalFemales=Adminregistration::where('gender','Female')->count();
+
+                                  $admin=Adminregistration::where('username',session()->get('username'))->first();
+
+                                  $userCount = Customer::select('id')->get()->count();
+                                  $productCount=Product::select('id')->get()->count();
+                                  $employeeCount=Officer::select('id')->get()->count();
+                                  $performance=Cperformance::select('Year','Sales','Expenses')->get();
+                                  $data="";
+
+                                  foreach ($performance as $key => $val) {
+                                    $data.= "['".$val->Year."',".$val->Sales.",".$val->Expenses."],";
+                                  }
+
+                                  return view('adminDashboard',compact('data'))->with('admin',$admin)
+                                                               ->with('allAdmin',$allAdmins)
+                                                               ->with('totalMales',$totalMales)
+                                                               ->with('totalFemales',$totalFemales)
+                                                               ->with('userCount',$userCount)
+                                                               ->with('productCount',$productCount)
+                                                               ->with('performance',$performance)
+                                                               ->with('branchInfo',$branchInfo)
+                                                               ->with('employeeCount',$employeeCount);
+
+
+                                }
+                                else{
+                                  $all= Adminregistration::all();
+                                  $allAdmins=count($all);
+                                  
+
+                                  $totalMales=Adminregistration::where('gender','Male')->count();
+                                  $totalFemales=Adminregistration::where('gender','Female')->count();
+
+                                  $admin=Adminregistration::where('username',session()->get('username'))->first();
+
+                                  $userCount = Customer::select('id')->get()->count();
+                                  $productCount=Product::select('id')->get()->count();
+                                  $employeeCount=Officer::select('id')->get()->count();
+                                  $performance=Cperformance::select('Year','Sales','Expenses')->get();
+                                  $data="";
+
+                                  foreach ($performance as $key => $val) {
+                                    $data.= "['".$val->Year."',".$val->Sales.",".$val->Expenses."],";
+                                  }
+
+                                  return view('adminDashboard',compact('data'))->with('admin',$admin)
+                                                               ->with('allAdmin',$allAdmins)
+                                                               ->with('totalMales',$totalMales)
+                                                               ->with('totalFemales',$totalFemales)
+                                                               ->with('userCount',$userCount)
+                                                               ->with('productCount',$productCount)
+                                                               ->with('performance',$performance)
+
+                                                               ->with('employeeCount',$employeeCount);
+                                }
 
                   }
 
