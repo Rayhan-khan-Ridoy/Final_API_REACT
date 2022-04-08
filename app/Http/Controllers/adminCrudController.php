@@ -13,19 +13,15 @@ class adminCrudController extends Controller
 {
   public function viewAllAdmin(){
                     $admins = Adminregistration::select('id','name','username','email','gender','pro_pic')->get();
-                    return view('viewAllAdmin')->with('admins',$admins);
+                    //return view('viewAllAdmin')->with('admins',$admins);
+                    return response()->json($admins);
     }
 
-   public function adminEdit(Request $req){
-                   $admin = Adminregistration::where('id',decrypt($req->id))->first();
-//dd($admin->branche);
-                   return view('adminEdit')->with('admin',$admin);
-
-  }
 
 
-  public function adminEditSubmit(Request $req){
-            $this->validate($req,
+
+  public function adminEdit(Request $req){
+            /*$this->validate($req,
                 [
                     'name'=>'required',
                     'username'=>'required|regex:/^[A-Z a-z . -]+$/|min:5|max:20|unique:adminregistrations,username',//
@@ -39,10 +35,8 @@ class adminCrudController extends Controller
 
 
                 ]
-            );
+            );*/
 
-                  $filename= $req->username.'.'.$req->file('pro_pic')->getClientOriginalExtension();
-                  $req->file('pro_pic')->storeAs('/public/pro_pic/',$filename);
 
 
                 $admin = Adminregistration::where('id',$req->id)->first();
@@ -51,14 +45,10 @@ class adminCrudController extends Controller
                   $admin->username=$req->username;
                   $admin->email=$req->email;
                   $admin->gender=$req->gender;
-                  $admin->pro_pic="storage/pro_pic/".$filename;
-
-
-
-
+             
                   $admin->save();
                   session()->flash('msg2','Updated successfully!');
-                  return redirect ()->route ( 'viewAllAdmin' );
+                  return response()->json($admin);
         }
 
 
@@ -66,10 +56,9 @@ class adminCrudController extends Controller
 
                   $admin = Adminregistration::where('id',($req->id))->delete();
                   session()->flash('msg3','Admin deleted successfully!');
-                  return redirect ()->route ( 'viewAllAdmin' );
-                }
+                  return response()->json($admin);                }
 
-
+/*
 //--------------start  searching
 public function searchAdmin(Request $req){
 
@@ -135,16 +124,47 @@ public function searchEmployee(Request $req){
               }
 
 //--------------end  searching
-
+*/
 
 //--------------start user or customer + employee + company performane activities
-public function addPerformance(){
-                            return view('addPerformance');
-                            }
+public function addPerformance(Request $req){
+ /* $this->validate($req,
+  [
+      'Year'=>'required|unique:cperformances,Year',
+      'Sales'=>'required',//
+      'Expenses'=>'required'
+    ],
+  [
+      'Year.required'=>'Please provide year',
+      'Sales.required'=>'Please provide Sales',
+      'Expenses.required'=>'Please provide Expenses'
 
-public function addPerformance_submit(Request $req){
 
-                    $this->validate($req,
+  ]
+);*/
+
+        $perf = new Cperformance();
+
+        $perf->Year = $req->Year;
+        $perf->Sales = $req->Sales;
+        $perf->Expenses = $req->Expenses;
+
+        $perf -> save(); //runs query in db
+
+        session()->flash('msg4','Performances added!');
+
+        //return back();
+        return response()->json(["msg"=>"Performance added Succesfully!",
+                                  "performance"=>$perf
+                                ]);
+
+      }
+
+                            
+
+public function editPerformance(Request $req){
+
+  /*                  $this->validate($req,
                         [
                             'Year'=>'required|unique:cperformances,Year',
                             'Sales'=>'required',//
@@ -158,9 +178,9 @@ public function addPerformance_submit(Request $req){
 
                         ]
                     );
-
-                              $perf = new Cperformance();
-
+*/
+                              
+                              $perf = Cperformance::where('id',$req->id)->first();
                               $perf->Year = $req->Year;
                               $perf->Sales = $req->Sales;
                               $perf->Expenses = $req->Expenses;
@@ -169,7 +189,10 @@ public function addPerformance_submit(Request $req){
 
                               session()->flash('msg4','Performances added!');
 
-                              return back();
+                              return response()->json([
+                                                      "msg"=>'Performances Edited!',
+                                                      "performance"=>$perf
+                                                    ]);
 
                             }
 
@@ -178,14 +201,15 @@ public function addPerformance_submit(Request $req){
                                     $perf = Cperformance::select('id','Year','Sales','Expenses')->get();
 
                                     //  dd($userCount);
-                                      return view('viewAllPerformance')->with('perf',$perf);
+                                    return response()->json($perf);
                                     }
 
 public function performaneDelete(Request $req){
 
                 $perf = Cperformance::where('id',($req->id))->delete();
                 session()->flash('msg3','Performance deleted successfully!');
-                return redirect ()->route ( 'viewAllPerformance' );
+                //return redirect ()->route ( 'viewAllPerformance' );
+                return response()->json($perf);
               }
 
 
@@ -196,19 +220,22 @@ public function viewAllEmployee(){
                                     $employees = Officer::select('id','name','email','salary','address')->get();
 
                                     //dd($employees);
-                                    return view('viewAllEmployee')->with('employees',$employees);
+                                    //return view('viewAllEmployee')->with('employees',$employees);
+                                    return response()->json($employees);
                                   }
 public function employeeDelete(Request $req){
 
                                     $emp = Officer::where('id',($req->id))->delete();
-                                    session()->flash('msg3','Employee deleted successfully!');
-                                    return redirect ()->route ( 'viewAllEmployee' );
+                                   // session()->flash('msg3','Employee deleted successfully!');
+                                    //return redirect ()->route ( 'viewAllEmployee' );
+                                    return response()->json(["msg"=>"Employee deleted Succesfully!"]);
                                   }
 public function viewAllUser(){
                                   $users = Customer::select('id','username','email','created_at')->get();
 
                                   //  dd($userCount);
-                                    return view('viewAllUser')->with('users',$users);
+                                   // return view('viewAllUser')->with('users',$users);
+                                   return response()->json($users);
                                   }
 
 
@@ -216,7 +243,10 @@ public function userDelete(Request $req){
 
                                     $admin = Customer::where('id',($req->id))->delete();
                                     session()->flash('msg3','Customer deleted successfully!');
-                                    return redirect ()->route ( 'viewAllUser' );
+                                    //return redirect ()->route ( 'viewAllUser' );
+                                    return response()->json([
+                                      "msg"=>'user deleted!'
+                                    ]);
                                   }
 //--------------end activities
 
@@ -227,14 +257,16 @@ public function userDelete(Request $req){
   public function viewAllProducts(){
                     $products = Product::select('id','pname','quantity','price','category')->get();
                     //dd($products);
-                    return view('viewAllProducts')->with('products',$products);
+                    //return view('viewAllProducts')->with('products',$products);
+                    return response()->json($products);
 
                   }
   public function productDelete(Request $req){
 
                     $products = Product::where('id',($req->id))->delete();
-                    session()->flash('msg3','Product deleted successfully!');
-                    return redirect ()->route ( 'viewAllProducts' );
+                   // session()->flash('msg3','Product deleted successfully!');
+                    //return redirect ()->route ( 'viewAllProducts' );
+                    return response()->json(["msg"=>"Product deleted Succesfully!"]);
                   }
 
 //--------------end product activities

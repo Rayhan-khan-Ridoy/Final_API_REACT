@@ -9,7 +9,7 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 
-//end google
+//end google 
 
 use Illuminate\Http\Request;
 use App\Models\Adminregistration;
@@ -23,6 +23,7 @@ use App\Models\Cperformance;
 class adminController extends Controller
 {
 
+  
   public function adminLogin(){
     return view('adminLogin');
   }
@@ -57,7 +58,7 @@ public function adminLoginSubmit(Request $req){
                          else return "Login Failed";
 
 
-                  }
+                  }  
 
   public function adminDashboard(){
 
