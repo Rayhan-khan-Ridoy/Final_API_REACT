@@ -5,6 +5,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\adminController;
 use App\Http\Controllers\adminCrudController;
 
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\EmployeeController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -45,3 +49,25 @@ Route::post('/addPerformance',[adminCrudController::class,'addPerformance'])->na
 Route::put('/editPerformance/{id}',[adminCrudController::class,'editPerformance'])->name('editPerformance');
 Route::get('/viewAllPerformance',[adminCrudController::class,'viewAllPerformance'])->name('viewAllPerformance');
 Route::get('/performaneDelete/{id}',[adminCrudController::class,'performaneDelete'])->name('performaneDelete');
+
+
+///ProductController
+Route::post('/product/add',[ProductController::class,'addProduct']);
+Route::get('/product/details/{id}',[ProductController::class,'productDetails'])->name('product.details');
+Route::get('/product/list',[ProductController::class,'productList'])->name('product.list');
+Route::get('/product/delete/{id}',[ProductController::class,'productDelete'])->name('product.delete');
+Route::put('/product/edit/{id}',[ProductController::class,'editProduct'])->name('product.edit');
+
+///SupplierController
+Route::post('/supplier/add',[SupplierController::class,'addSupplier']);
+Route::get('/supplier/details/{id}',[SupplierController::class,'supplierDetails'])->name('supplier.details');
+Route::get('/supplier/list',[SupplierController::class,'supplierList'])->name('supplier.list');
+Route::get('/supplier/delete/{id}',[SupplierController::class,'supplierDelete'])->name('supplier.delete');
+Route::put('/supplier/edit/{id}',[SupplierController::class,'editSupplier'])->name('supplier.edit');
+
+///OfficerController
+Route::post('/officer/add',[EmployeeController::class,'addOfficer']);
+Route::get('/officer/details/{id}',[EmployeeController::class,'officerDetails'])->name('officer.details');
+Route::get('/officer/list',[EmployeeController::class,'officerList'])->name('officer.list');
+Route::get('/officer/delete/{id}',[EmployeeController::class,'officerDelete'])->name('officer.delete');
+Route::put('/officer/edit/{id}',[EmployeeController::class,'editOfficer'])->name('officer.edit');
