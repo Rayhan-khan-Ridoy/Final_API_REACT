@@ -62,9 +62,9 @@ Route::get('/viewAllPerformance',[adminCrudController::class,'viewAllPerformance
 Route::get('/performaneDelete/{id}',[adminCrudController::class,'performaneDelete'])->name('performaneDelete');
 
 
-<<<<<<< HEAD
+
 //-----end ridoy------
-=======
+
 ///ProductController
 Route::post('/product/add',[ProductController::class,'addProduct']);
 Route::get('/product/details/{id}',[ProductController::class,'productDetails'])->name('product.details');
@@ -85,4 +85,4 @@ Route::get('/officer/details/{id}',[EmployeeController::class,'officerDetails'])
 Route::get('/officer/list',[EmployeeController::class,'officerList'])->name('officer.list');
 Route::get('/officer/delete/{id}',[EmployeeController::class,'officerDelete'])->name('officer.delete');
 Route::put('/officer/edit/{id}',[EmployeeController::class,'editOfficer'])->name('officer.edit');
->>>>>>> 9d8a314b696f764609bc20f72aa06bc0914bfa53
+

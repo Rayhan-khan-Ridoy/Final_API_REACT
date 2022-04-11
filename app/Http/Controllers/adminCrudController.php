@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Models\Officer;
 use App\Models\Cperformance;
 use App\Models\Branche;
+use Validator;
 
 class adminCrudController extends Controller
 {
@@ -34,13 +35,14 @@ class adminCrudController extends Controller
 
   public function adminEdit(Request $req)
   {
-    /*$this->validate($req,
+
+   /* $this->validate($req,
                 [
                     'name'=>'required',
                     'username'=>'required|regex:/^[A-Z a-z . -]+$/|min:5|max:20|unique:adminregistrations,username',//
                     'email'=>'required|email|unique:adminregistrations,email',
-                    'gender'=>'required',
-                    'pro_pic'=>'required|mimes:jpg,png'
+                    'gender'=>'required'
+                    //'pro_pic'=>'required|mimes:jpg,png'
                 ],
                 [
                     'username.required'=>'Please provide username',
@@ -48,10 +50,31 @@ class adminCrudController extends Controller
 
 
                 ]
-            );*/
+            );
+
+*/
+        $validator = Validator::make($req->all(),[
+          'name'=>'required',
+          'username'=>'required|regex:/^[A-Z a-z . -]+$/|min:5|max:20|unique:adminregistrations,username',//
+          'email'=>'required|email|unique:adminregistrations,email',
+          'gender'=>'required'
+          //'pro_pic'=>'required|mimes:jpg,png'
+      ],
+      [
+          'name.required'=>'Please provide name--customErrMsg',
+          'username.required'=>'Please provide username--customErrMsg',
+          'email.required'=>'Please provide your email--customErrMsg',
+          'gender.required'=>'Please provide your grnder--customErrMsg',
+          'username.max'=>'Username must not exceed 20 alphabets--customErrMsg'
 
 
+      ]);
 
+        if($validator->fails())
+        {
+          return $validator->errors();
+        }
+        else{
           $admin = Adminregistration::where('id', $req->id)->first();
 
           $admin->name = $req->name;
@@ -65,6 +88,8 @@ class adminCrudController extends Controller
             "msg" => "Admin Edited Succesfully !",
             "admin" => $admin
           ]);
+        }
+          
   }
 
 
@@ -146,62 +171,104 @@ public function searchEmployee(Request $req){
 //--------------end  searching
 */
 
+
+
+
+
   //--------------start user or customer + employee + company performane activities
+  
+  
+  
   public function addPerformance(Request $req)
   {
-          /* $this->validate($req,
-        [
-            'Year'=>'required|unique:cperformances,Year',
-            'Sales'=>'required',//
-            'Expenses'=>'required'
-          ],
-        [
-            'Year.required'=>'Please provide year',
-            'Sales.required'=>'Please provide Sales',
-            'Expenses.required'=>'Please provide Expenses'
+                /* $this->validate($req,
+                  [
+                      'Year'=>'required|unique:cperformances,Year',
+                      'Sales'=>'required',//
+                      'Expenses'=>'required'
+                    ],
+                  [
+                      'Year.required'=>'Please provide year',
+                      'Sales.required'=>'Please provide Sales',
+                      'Expenses.required'=>'Please provide Expenses'
 
 
-        ]
-      );*/
+                  ]
+                );*/
+                $validator = Validator::make($req->all(),[
+                  'Sales'=>'required',
+                  'Year'=>'required',
+                  'Expenses'=>'required'
+              ],
+              [
+                  'Sales.required'=>'Please provide Sales--customErrMsg',
+                  'Year.required'=>'Please provide Year--customErrMsg',
+                  'Expenses.required'=>'Please provide Expenses--customErrMsg'          
+        
+        
+              ]);
+        
+                if($validator->fails())
+                {
+                  return $validator->errors();
+                }
+                else{
+                  $perf = new Cperformance();
+                  $perf->Year = $req->Year;
+                  $perf->Sales = $req->Sales;
+                  $perf->Expenses = $req->Expenses;
+        
+                  $perf->save(); //runs query in db
+        
+                  return response()->json([
+                    "msg" => 'Performances added!',
+                    "performance" => $perf
+                  ]);
+                }
 
-          $perf = new Cperformance();
-
-          $perf->Year = $req->Year;
-          $perf->Sales = $req->Sales;
-          $perf->Expenses = $req->Expenses;
-
-          $perf->save(); //runs query in db
-
-          session()->flash('msg4', 'Performances added!');
-
-          //return back();
-          return response()->json([
-            "msg" => "Performance added Succesfully!",
-            "performance" => $perf
-          ]);
-  }
+                    
+            }
 
 
 
-  public function editPerformance(Request $req)
-  {
+ public function editPerformance(Request $req)
+ {
 
-    /*                  $this->validate($req,
-                        [
-                            'Year'=>'required|unique:cperformances,Year',
-                            'Sales'=>'required',//
-                            'Expenses'=>'required'
-                          ],
-                        [
-                            'Year.required'=>'Please provide year',
-                            'Sales.required'=>'Please provide Sales',
-                            'Expenses.required'=>'Please provide Expenses'
+              /*                  $this->validate($req,
+                                  [
+                                      'Year'=>'required|unique:cperformances,Year',
+                                      'Sales'=>'required',//
+                                      'Expenses'=>'required'
+                                    ],
+                                  [
+                                      'Year.required'=>'Please provide year',
+                                      'Sales.required'=>'Please provide Sales',
+                                      'Expenses.required'=>'Please provide Expenses'
 
 
-                        ]
-                    );
-*/
+                                  ]
+                              );
+          */
+        
+       
+   $validator = Validator::make($req->all(),[
+          'Sales'=>'required',
+          'Year'=>'required',
+          'Expenses'=>'required'
+      ],
+      [
+          'Sales.required'=>'Please provide Sales--customErrMsg',
+          'Year.required'=>'Please provide Year--customErrMsg',
+          'Expenses.required'=>'Please provide Expenses--customErrMsg'          
 
+
+      ]);
+
+        if($validator->fails())
+        {
+          return $validator->errors();
+        }
+        else{
           $perf = Cperformance::where('id', $req->id)->first();
           $perf->Year = $req->Year;
           $perf->Sales = $req->Sales;
@@ -209,12 +276,13 @@ public function searchEmployee(Request $req){
 
           $perf->save(); //runs query in db
 
-          session()->flash('msg4', 'Performances added!');
-
           return response()->json([
-            "msg" => 'Performances Edited!',
+            "msg" => 'Performances added!',
             "performance" => $perf
           ]);
+        }
+
+          
   }
 
 
@@ -366,6 +434,24 @@ public function searchEmployee(Request $req){
   }
   public function editBranche(Request $req)
   {
+        $validator = Validator::make($req->all(),[
+          'bname'=>'required',
+          'email'=>'required|email',
+         
+      ],
+      [
+          'bname.required'=>'Please provide Branch names--customErrMsg',
+          'email.required'=>'Please provide Branch email--customErrMsg'       
+
+
+      ]);
+
+        if($validator->fails())
+        {
+          return $validator->errors();
+        }
+        else
+        {
           $branchs = Branche::where('id', $req->id)->first();
 
           $branchs->bname = $req->bname;
@@ -377,6 +463,8 @@ public function searchEmployee(Request $req){
             "msg" => "Branch edited Succesfully!",
             "branch" => $branchs
           ]);
+        }
+         
   }
 
   //--------------end branchs activities
