@@ -7,6 +7,7 @@ use App\Http\Controllers\adminCrudController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\mailController;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,6 +62,10 @@ Route::put('/editPerformance/{id}',[adminCrudController::class,'editPerformance'
 Route::get('/viewAllPerformance',[adminCrudController::class,'viewAllPerformance'])->name('viewAllPerformance');
 Route::get('/performaneDelete/{id}',[adminCrudController::class,'performaneDelete'])->name('performaneDelete');
 
+
+
+//-----------mail---------
+Route::get('/sendMail',[mailController::class,'sendMail']);
 
 
 //-----end ridoy------
