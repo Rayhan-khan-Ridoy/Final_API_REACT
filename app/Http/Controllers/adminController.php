@@ -9,46 +9,52 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 
-//end google 
+//end google
 
 use Illuminate\Http\Request;
 use App\Models\Adminregistration;
+use App\Models\Admin_reg_react;
 use App\Models\Customer;
 use App\Models\Product;
 use App\Models\Officer;
 use App\Models\Cperformance;
+use Validator;
 
 
 
 class adminController extends Controller
 {
 
-  
-  public function adminLogin(){
-    return view('adminLogin');
-  }
 
-public function adminLoginSubmit(Request $req){
-                          $this->validate($req,
-                              [
 
-                                  'username'=>'required|regex:/^[A-Z a-z . -]+$/|min:5|max:20',//
-                                  'password'=>'required|min:8'
+public function adminLogin(Request $req){
+        $validator = Validator::make($req->all(),[
 
-                              ],
-                              [
-                                  'username.required'=>'Please provide username',
-                                  'username.max'=>'Username must not exceed 20 alphabets'
-                              ]
-                          );
-                          $ad = Adminregistration::where('username',$req->username)->where('password',md5($req->password))->first();
+            'username'=>'required|regex:/^[A-Z a-z . -]+$/|min:5|max:20|unique:adminregistrations,username',//
+            'password'=>'required|min:8'
+        ],
+        [
+            'username.required'=>'Please provide username--customErrMsg',
+            'password.required'=>'Please provide your password--customErrMsg'
+
+        ]);
+
+          if($validator->fails())
+          {
+            return $validator->errors();
+          }
+          else{
+
+                $ad = Admin_reg_react::where('username',$req->username)->where('password',$req->password)->first();
 
                          if($ad) {
                             session()->flush();
                             session()->put('id',$ad->id);
                             session()->put('username',$ad->username);
                             session()->flash('msg','login successful!');
-                            return redirect()->route('adminDashboard');
+                            return response()->json(["logged_admin"=>$ad,
+                                                    "logged_session"=>session()->get('username')]);
+                            //return redirect()->route('adminDashboard');
                             //session()->get('username')
                             //session()->has('username')
                             //session()->forget('username'),session()->forget(['id','username'])
@@ -58,7 +64,8 @@ public function adminLoginSubmit(Request $req){
                          else return "Login Failed";
 
 
-                  }  
+                  }
+                }
 
   public function adminDashboard(){
 
@@ -131,49 +138,49 @@ public function adminLoginSubmit(Request $req){
 
                   }
 
-  public function registration(){
-                              return view('registration');
-                              }
 
-  public function registration_submit(Request $req){
 
-                                $this->validate($req,
-                                    [
-                                        'name'=>'required',
-                                        'username'=>'required|regex:/^[A-Z a-z . -]+$/|min:5|max:20|unique:adminregistrations,username',//
-                                        'email'=>'required|email|unique:adminregistrations,email',
-                                        'gender'=>'required|',
-                                        'password'=>'required|min:8',
-                                        'conf_password'=>'required|same:password',
-                                        'pro_pic'=>'required|mimes:jpg,png'
-                                    ],
-                                    [
-                                        'username.required'=>'Please provide username',
-                                        'username.max'=>'Username must not exceed 20 alphabets',
-                                        'conf_password.same'=>'Password and confirm password must match'
+  public function registration(Request $req){
 
-                                    ]
-                                );
 
-                                $filename= $req->username.'.'.$req->file('pro_pic')->getClientOriginalExtension();
-                                $req->file('pro_pic')->storeAs('/public/pro_pic/',$filename);
+    $validator = Validator::make($req->all(),[
+        'name'=>'required|min:5',
+        'username'=>'required|regex:/^[A-Z a-z . -]+$/|min:5|max:20|unique:admin_reg_reacts,username',//
+        'password'=>'required|min:8',
+        'email'=>'required|email|unique:admin_reg_reacts,email',
+        'address'=>'required'
+    ],
+    [
+        'name.required'=>'Please provide name--customErrMsg',
+        'username.required'=>'Please provide username--customErrMsg',
+        'password.required'=>'Please provide your password--customErrMsg',
+        'email.required'=>'Please provide email--customErrMsg',
+        'address.required'=>'Please provide address--customErrMsg'
 
-                                $ad = new Adminregistration();
+    ]);
 
-                                $ad->name = $req->name;
-                                $ad->username = $req->username;
-                                $ad->email = $req->email;
-                                $ad->gender = $req->gender;
-                                $ad->branche_id = $req->branch;;
-                                $ad->pro_pic = "storage/pro_pic/".$filename;
-                                $ad->password = md5($req->conf_password);
-                                $ad->save(); //runs query in db
+      if($validator->fails())
+      {
+        return $validator->errors();
+      }
+      else{
 
-                                session()->flash('msg4','ADMIN REGISTRATION SUCCESSFULL! LOGIN NOW!');
+            $ad = new Admin_reg_react();
+//            dd($ad);
+            $ad->name = $req->name;
+            $ad->username = $req->username;
+            $ad->password = $req->password;
+            $ad->email = $req->email;
+            $ad->address = $req->address;
 
-                                return view('adminLogin');
+            $ad->save(); //runs query in db
 
-                              }
+            session()->flash('msg4','ADMIN REGISTRATION SUCCESSFULL! LOGIN NOW!');
+
+            return response()->json($ad);
+            }
+}
+
 
   public function adminlogout(){
         session()->flush();

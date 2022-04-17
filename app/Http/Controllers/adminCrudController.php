@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Adminregistration;
+use App\Models\Admin_reg_react;
 use App\Models\Customer;
 use App\Models\Product;
 use App\Models\Officer;
@@ -15,14 +16,14 @@ class adminCrudController extends Controller
 {
   public function viewAllAdmin()
   {
-          $admins = Adminregistration::select('id', 'name', 'username', 'email', 'gender', 'pro_pic')->get();
+          $admins = Admin_reg_react::all();
           //return view('viewAllAdmin')->with('admins',$admins);
           return response()->json($admins);
   }
 
   public function viewInduvidualAdmin(Request $req)
   {
-          $admins = Adminregistration::where('id', $req->id)->first();
+          $admins = Admin_reg_react::where('id', $req->id)->first();
 
           return response()->json([
             "msg" => "this is individual Admin info!",
@@ -54,33 +55,33 @@ class adminCrudController extends Controller
 
 */
         $validator = Validator::make($req->all(),[
-          'name'=>'required',
-          'username'=>'required|regex:/^[A-Z a-z . -]+$/|min:5|max:20|unique:adminregistrations,username',//
-          'email'=>'required|email|unique:adminregistrations,email',
-          'gender'=>'required'
-          //'pro_pic'=>'required|mimes:jpg,png'
-      ],
-      [
-          'name.required'=>'Please provide name--customErrMsg',
-          'username.required'=>'Please provide username--customErrMsg',
-          'email.required'=>'Please provide your email--customErrMsg',
-          'gender.required'=>'Please provide your grnder--customErrMsg',
-          'username.max'=>'Username must not exceed 20 alphabets--customErrMsg'
+            'name'=>'required|min:5',
+            'username'=>'required|regex:/^[A-Z a-z . -]+$/|min:5|max:20|unique:admin_reg_reacts,username',//
+            'password'=>'required|min:8',
+            'email'=>'required|email|unique:admin_reg_reacts,email',
+            'address'=>'required'
+        ],
+        [
+            'name.required'=>'Please provide name--customErrMsg',
+            'username.required'=>'Please provide username--customErrMsg',
+            'password.required'=>'Please provide your password--customErrMsg',
+            'email.required'=>'Please provide email--customErrMsg',
+            'address.required'=>'Please provide address--customErrMsg'
 
-
-      ]);
+        ]);
 
         if($validator->fails())
         {
           return $validator->errors();
         }
         else{
-          $admin = Adminregistration::where('id', $req->id)->first();
+          $admin = Admin_reg_react::where('id', $req->id)->first();
 
           $admin->name = $req->name;
           $admin->username = $req->username;
+          $admin->password = $req->password;
           $admin->email = $req->email;
-          $admin->gender = $req->gender;
+          $admin->address = $req->address;
 
           $admin->save();
           session()->flash('msg2', 'Updated successfully!');
@@ -89,14 +90,14 @@ class adminCrudController extends Controller
             "admin" => $admin
           ]);
         }
-          
+
   }
 
 
   public function adminDelete(Request $req)
   {
 
-          $admin = Adminregistration::where('id', ($req->id))->delete();
+          $admin = Admin_reg_react::where('id', ($req->id))->delete();
           session()->flash('msg3', 'Admin deleted successfully!');
           return response()->json([
             "msg" => "Admin Deleted Succesfully !"
@@ -176,9 +177,9 @@ public function searchEmployee(Request $req){
 
 
   //--------------start user or customer + employee + company performane activities
-  
-  
-  
+
+
+
   public function addPerformance(Request $req)
   {
                 /* $this->validate($req,
@@ -203,11 +204,11 @@ public function searchEmployee(Request $req){
               [
                   'Sales.required'=>'Please provide Sales--customErrMsg',
                   'Year.required'=>'Please provide Year--customErrMsg',
-                  'Expenses.required'=>'Please provide Expenses--customErrMsg'          
-        
-        
+                  'Expenses.required'=>'Please provide Expenses--customErrMsg'
+
+
               ]);
-        
+
                 if($validator->fails())
                 {
                   return $validator->errors();
@@ -217,16 +218,16 @@ public function searchEmployee(Request $req){
                   $perf->Year = $req->Year;
                   $perf->Sales = $req->Sales;
                   $perf->Expenses = $req->Expenses;
-        
+
                   $perf->save(); //runs query in db
-        
+
                   return response()->json([
                     "msg" => 'Performances added!',
                     "performance" => $perf
                   ]);
                 }
 
-                    
+
             }
 
 
@@ -249,8 +250,8 @@ public function searchEmployee(Request $req){
                                   ]
                               );
           */
-        
-       
+
+
    $validator = Validator::make($req->all(),[
           'Sales'=>'required',
           'Year'=>'required',
@@ -259,7 +260,7 @@ public function searchEmployee(Request $req){
       [
           'Sales.required'=>'Please provide Sales--customErrMsg',
           'Year.required'=>'Please provide Year--customErrMsg',
-          'Expenses.required'=>'Please provide Expenses--customErrMsg'          
+          'Expenses.required'=>'Please provide Expenses--customErrMsg'
 
 
       ]);
@@ -282,7 +283,7 @@ public function searchEmployee(Request $req){
           ]);
         }
 
-          
+
   }
 
 
@@ -437,11 +438,11 @@ public function searchEmployee(Request $req){
         $validator = Validator::make($req->all(),[
           'bname'=>'required',
           'email'=>'required|email',
-         
+
       ],
       [
           'bname.required'=>'Please provide Branch names--customErrMsg',
-          'email.required'=>'Please provide Branch email--customErrMsg'       
+          'email.required'=>'Please provide Branch email--customErrMsg'
 
 
       ]);
@@ -464,7 +465,7 @@ public function searchEmployee(Request $req){
             "branch" => $branchs
           ]);
         }
-         
+
   }
 
   //--------------end branchs activities

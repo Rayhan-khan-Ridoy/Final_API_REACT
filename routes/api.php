@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\adminCrudController;
+use App\Http\Controllers\adminController;
 
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SupplierController;
@@ -25,16 +26,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 //------start ridoy-----
-/*
-Route::get('/adminLogin',[adminController::class,'adminLogin'])->name('adminLogin');
-Route::post('/adminLoginSubmit',[adminController::class,'adminLoginSubmit'])->name('adminLoginSubmit');
 
-Route::get('/adminDashboard',[adminController::class,'adminDashboard'])->name('adminDashboard')->middleware('authorized');
-Route::get('/adminlogout',[adminController::class,'adminlogout'])->name('adminlogout');
+Route::post('/adminLogin',[adminController::class,'adminLogin'])->name('adminLogin');
+Route::post('/regis',[adminController::class,'registration'])->name('registration');
 
-Route::get('/regis',[adminController::class,'registration'])->name('registration')->middleware('authorized');
-Route::post('/registration_submit',[adminController::class,'registration_submit'])->name('registration_submit')->middleware('authorized');
-*/
 Route::get('/viewAllAdmin',[adminCrudController::class,'viewAllAdmin'])->name('viewAllAdmin');//->middleware('authorized');
 Route::get('/viewAllUser',[adminCrudController::class,'viewAllUser'])->name('viewAllUser');//->middleware('authorized');
 Route::get('/viewAllProducts',[adminCrudController::class,'viewAllProducts'])->name('viewAllProducts');//->middleware('authorized');
@@ -90,4 +85,3 @@ Route::get('/officer/details/{id}',[EmployeeController::class,'officerDetails'])
 Route::get('/officer/list',[EmployeeController::class,'officerList'])->name('officer.list');
 Route::get('/officer/delete/{id}',[EmployeeController::class,'officerDelete'])->name('officer.delete');
 Route::put('/officer/edit/{id}',[EmployeeController::class,'editOfficer'])->name('officer.edit');
-
